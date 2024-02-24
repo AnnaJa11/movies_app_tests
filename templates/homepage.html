@@ -1,0 +1,39 @@
+{% extends "index.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12 text-center">
+            <h1 class="mt-5 pt-5">Welcome to my movies library</h1>
+            <a href="https://api.themoviedb.org/3/movie/popular" target="_blank">https://api.themoviedb.org/3/movie/popular</a>
+            <p class="lead">You will find only the best titles here!</p>
+        </div>
+        
+        <div class="row">
+            <div class="col-lg-12 mb-4">
+                {% for list_type, label in list_types.items() %}
+                    <a href="{{ url_for('homepage', list_type=list_type) }}" class="btn btn-outline-info">{{ label }}</a>
+                {% endfor %}
+            </div>
+        </div>
+        
+    </div>
+    </div>
+
+    <div class="row">
+        {% for movie in movies %}
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="card h-100">
+                <img class="card-img-top" src="{{ tmdb_image_url(movie.poster_path,'w780') }}" alt="{{ movie.original_title }}">
+                <div class="card-body">
+                    <h4 class="card-title">{{ movie.original_title }}</h4>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ url_for('movie_details', movie_id=movie.id) }}">Show more</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
