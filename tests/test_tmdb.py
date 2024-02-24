@@ -1,11 +1,37 @@
 import pytest
 import sys
-sys.path.append('utils')
-sys.path.insert(1, r'movies_proj/movies_app')
-from tmdb_client import get_poster_url, get_movies_list, get_single_movie, get_single_movie_cast, get_movie_images, get_movies
+# print(sys.path)
+sys.path.insert(1, 'C:/Users/ajasi/OneDrive/Desktop/Kodilla/MOVIES_MY_APP/movies_proj/movies_app')
 from unittest.mock import Mock
-import requests
+from main import app
+from tmdb_client import get_poster_url, get_movies_list, get_single_movie, get_single_movie_cast, get_movie_images, get_movies
 
+
+def test_homepage(monkeypatch):
+   api_mock = Mock(return_value={'results': []})
+   monkeypatch.setattr("tmdb_client.call_tmdb_api", api_mock)
+
+   with app.test_client() as client:
+       response = client.get('/')
+       assert response.status_code == 200
+       api_mock.assert_called_once_with('movie/popular')
+
+@pytest.mark.parametrize("list_type", ["popular", "top_rated", "now_playing", "upcoming"])
+def test_homepage(monkeypatch, list_type):
+    # mock dla funkcji call_tmdb_api
+    api_mock = Mock(return_value={'results': []})
+    monkeypatch.setattr("tmdb_client.call_tmdb_api", api_mock)
+
+    # Testowanie endpointu dla różnych typów list filmów
+    with app.test_client() as client:
+        response = client.get(f'/?list_type={list_type}')
+        assert response.status_code == 200
+
+        # Drukowanie informacji o wywołaniach mocka
+        print(f"Call arguments for 'call_tmdb_api': {api_mock.call_args}")
+
+        # Sprawdzenie, czy funkcja call_tmdb_api została wywołana przynajmniej raz
+        assert api_mock.call_count >= 1
 
 def test_get_poster_url_uses_default_size():
    # Przygotowanie danych
@@ -143,3 +169,5 @@ def test_get_poster_url_default_size():
 
 if __name__ == '__main__':
    pytest.main()
+
+#    pytest -v
